@@ -1,0 +1,8 @@
+name=Catch June
+author=Ed Corcoran
+description=Can you catch June?
+bundleID=com.example.catch-june
+version=1.0
+buildNumber=1
+imagePath=system
+launchSoundPath=
