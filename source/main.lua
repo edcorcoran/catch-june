@@ -14,6 +14,9 @@ local juneSprite = nil
 
 local wait_length<const> = 500
 
+local moveOptions = {'up','down', 'left', 'right'}
+local lastJuneMovement = moveOptions[math.random(4)]
+
 function gameIntro()
     local font<const> = gfx.getFont()
     
@@ -90,6 +93,38 @@ function gameWon()
     gfx.clear()
 end
 
+function moveJune()
+    -- Markov chain movement.
+    -- 50% chance you stay in the same direction 
+    -- 16.66% chance (50/3) you move one of the other directions. 
+
+    local statetab = {
+        up = {'down', 'left', 'right', 'up', 'up', 'up'}
+        , down = {'left', 'right', 'up', 'down', 'down', 'down'}
+        , left = {'right', 'up', 'down', 'left', 'left', 'left'}
+        , right = {'left', 'up', 'down', 'right', 'right', 'right'}
+    }
+
+    local list = statetab[lastJuneMovement]
+      -- choose a random item from list
+    local nextmove = list[math.random(6)]
+
+    if nextmove == 'up' then 
+        if juneSprite.y > 0 then juneSprite:moveBy(0,-4) end
+    end
+    if nextmove == 'right' then 
+        if juneSprite.y < 400 then juneSprite:moveBy(4,0) end
+    end
+    if nextmove == 'down' then 
+        if juneSprite.y < 240 then juneSprite:moveBy(0,4) end
+    end
+    if nextmove == 'left' then juneSprite:moveBy(-4,0)
+        if juneSprite.x > 0 then juneSprite:moveBy( -4, 0 ) end
+    end
+
+
+end
+
 function pd.update()
 
     if introFlag == 1 then
@@ -118,19 +153,21 @@ function pd.update()
     end
 
     -- Move June
-    local direction = math.random(4)
-    if direction == 1 then 
-        if juneSprite.y > 0 then juneSprite:moveBy(0,-4) end
-    end
-    if direction == 2 then 
-        if juneSprite.y < 400 then juneSprite:moveBy(4,0) end
-    end
-    if direction == 3 then 
-        if juneSprite.y < 240 then juneSprite:moveBy(0,4) end
-    end
-    if direction == 4 then juneSprite:moveBy(-4,0)
-        if juneSprite.x > 0 then juneSprite:moveBy( -4, 0 ) end
-    end
+    moveJune()
+
+    -- local direction = math.random(4)
+    -- if direction == 1 then 
+    --     if juneSprite.y > 0 then juneSprite:moveBy(0,-4) end
+    -- end
+    -- if direction == 2 then 
+    --     if juneSprite.y < 400 then juneSprite:moveBy(4,0) end
+    -- end
+    -- if direction == 3 then 
+    --     if juneSprite.y < 240 then juneSprite:moveBy(0,4) end
+    -- end
+    -- if direction == 4 then juneSprite:moveBy(-4,0)
+    --     if juneSprite.x > 0 then juneSprite:moveBy( -4, 0 ) end
+    -- end
 
     gfx.sprite.update()
     pd.timer.updateTimers()
