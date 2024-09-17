@@ -46,39 +46,29 @@ function gameIntro()
 end
 
 function setupGame()
-    -- Set up the player sprite.
     local playerImage = gfx.image.new("images/GuyBodyL2")
-    assert( playerImage ) -- make sure the image was where we thought
+    assert( playerImage )
 
     playerSprite = gfx.sprite.new( playerImage )
-    playerSprite:moveTo( 200, 120 ) -- this is where the center of the sprite is placed; (200,120) is the center of the Playdate screen
-    playerSprite:add() -- This is critical!
+    playerSprite:moveTo( 200, 120 )
+    playerSprite:add()
     playerSprite:setCollideRect( 0, 0, playerSprite:getSize() )
 
     local JuneImage = gfx.image.new("images/Monster")
-    assert( JuneImage ) -- make sure the image was where we thought
+    assert( JuneImage )
 
     juneSprite = gfx.sprite.new( JuneImage )
     local randx = math.random(0,400)
     local randy = math.random(0,240)
     juneSprite:moveTo( randx, randy )
-    juneSprite:add() -- This is critical!
+    juneSprite:add()
     juneSprite:setCollideRect( 0, 0, juneSprite:getSize() )
 
-    -- We want an environment displayed behind our sprite.
-    -- There are generally two ways to do this:
-    -- 1) Use setBackgroundDrawingCallback() to draw a background image. (This is what we're doing below.)
-    -- 2) Use a tilemap, assign it to a sprite with sprite:setTilemap(tilemap),
-    --       and call :setZIndex() with some low number so the background stays behind
-    --       your other sprites.
-
-    local backgroundImage = gfx.image.new( "images/background" )
+      local backgroundImage = gfx.image.new( "images/background" )
     assert( backgroundImage )
 
     gfx.sprite.setBackgroundDrawingCallback(
         function( x, y, width, height )
-            -- x,y,width,height is the updated area in sprite-local coordinates
-            -- The clip rect is already set to this area, so we don't need to set it ourselves
             backgroundImage:draw( 0, 0 )
         end
     )
@@ -113,35 +103,34 @@ function pd.update()
         gameWon()
         setupGame()
     end
-
-    -- -- Poll the d-pad and move our player accordingly.
-    -- -- (There are multiple ways to read the d-pad; this is the simplest.)
-    -- -- Note that it is possible for more than one of these directions
-    -- -- to be pressed at once, if the user is pressing diagonally.
-
+    -- Player movement
     if pd.buttonIsPressed( pd.kButtonUp ) then
-        playerSprite:moveBy( 0, -2 )
+        if playerSprite.y > 0 then playerSprite:moveBy( 0, -2 ) end
     end
     if pd.buttonIsPressed( pd.kButtonRight ) then
-        playerSprite:moveBy( 2, 0 )
+        if playerSprite.x < 400 then playerSprite:moveBy( 2, 0 ) end
     end
     if pd.buttonIsPressed( pd.kButtonDown ) then
-        playerSprite:moveBy( 0, 2 )
+        if playerSprite.y < 240 then playerSprite:moveBy( 0, 2 ) end
     end
     if pd.buttonIsPressed( pd.kButtonLeft ) then
-        playerSprite:moveBy( -2, 0 )
+        if playerSprite.x > 0 then playerSprite:moveBy( -2, 0 ) end
     end
 
     -- Move June
     local direction = math.random(4)
-    if direction == 1 then juneSprite:moveBy(0,-4) end
-    if direction == 2 then juneSprite:moveBy(4,0) end
-    if direction == 3 then juneSprite:moveBy(0,4) end
-    if direction == 4 then juneSprite:moveBy(-4,0) end
-
-    -- Call the functions below in playdate.update() to draw sprites and keep
-    -- timers updated. (We aren't using timers in this example, but in most
-    -- average-complexity games, you will.)
+    if direction == 1 then 
+        if juneSprite.y > 0 then juneSprite:moveBy(0,-4) end
+    end
+    if direction == 2 then 
+        if juneSprite.y < 400 then juneSprite:moveBy(4,0) end
+    end
+    if direction == 3 then 
+        if juneSprite.y < 240 then juneSprite:moveBy(0,4) end
+    end
+    if direction == 4 then juneSprite:moveBy(-4,0)
+        if juneSprite.x > 0 then juneSprite:moveBy( -4, 0 ) end
+    end
 
     gfx.sprite.update()
     pd.timer.updateTimers()
