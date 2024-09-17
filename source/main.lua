@@ -6,8 +6,13 @@ import "CoreLibs/timer"
 local pd<const> = playdate
 local gfx<const> = pd.graphics
 
+introFlag = 1
+math.randomseed(playdate.getSecondsSinceEpoch())
+
 local playerSprite = nil
 local juneSprite = nil
+
+local wait_length<const> = 500
 
 function gameIntro()
     local font<const> = gfx.getFont()
@@ -18,7 +23,7 @@ function gameIntro()
     local x<const> = (400 - w) / 2
     local y<const> = (240 - h) / 2
     gfx.drawText(phrase_1, x, y)
-    playdate.wait(1000)
+    playdate.wait(wait_length)
     gfx.clear()
   
     local phrase_2<const> = "Now you must ..."
@@ -27,7 +32,7 @@ function gameIntro()
     local x<const> = (400 - w) / 2
     local y<const> = (240 - h) / 2
     gfx.drawText(phrase_2, x, y)
-    playdate.wait(1000)
+    playdate.wait(wait_length)
     gfx.clear()
 
     local phrase_3<const> = "CATCH JUNE"
@@ -36,14 +41,12 @@ function gameIntro()
     local x<const> = (400 - w) / 2
     local y<const> = (240 - h) / 2
     gfx.drawText(phrase_3, x, y)
-    playdate.wait(1000)
+    playdate.wait(wait_length)
     gfx.clear()
 end
 
 function setupGame()
-
     -- Set up the player sprite.
-
     local playerImage = gfx.image.new("images/GuyBodyL2")
     assert( playerImage ) -- make sure the image was where we thought
 
@@ -55,12 +58,12 @@ function setupGame()
     local JuneImage = gfx.image.new("images/Monster")
     assert( JuneImage ) -- make sure the image was where we thought
 
-    JuneSprite = gfx.sprite.new( JuneImage )
+    juneSprite = gfx.sprite.new( JuneImage )
     local randx = math.random(0,400)
     local randy = math.random(0,240)
-    JuneSprite:moveTo( randx, randy )
-    JuneSprite:add() -- This is critical!
-    JuneSprite:setCollideRect( 0, 0, JuneSprite:getSize() )
+    juneSprite:moveTo( randx, randy )
+    juneSprite:add() -- This is critical!
+    juneSprite:setCollideRect( 0, 0, juneSprite:getSize() )
 
     -- We want an environment displayed behind our sprite.
     -- There are generally two ways to do this:
@@ -83,6 +86,8 @@ function setupGame()
 end
 
 function gameWon()
+    playerSprite:remove()
+    juneSprite:remove()
     gfx.clear()
     local font<const> = gfx.getFont()
     local phrase_1<const> = "You Caught June!"
@@ -95,21 +100,16 @@ function gameWon()
     gfx.clear()
 end
 
-introFlag = 0
-math.randomseed(playdate.getSecondsSinceEpoch())
-
 function pd.update()
 
-    -- gameIntro()
-
-    if introFlag == 0 then
+    if introFlag == 1 then
         gameIntro()
-        introFlag = 1
+        introFlag = 0
         setupGame()
     end
 
 
-    if playerSprite:alphaCollision(JuneSprite) then
+    if playerSprite:alphaCollision(juneSprite) then
         gameWon()
         setupGame()
     end
@@ -134,10 +134,10 @@ function pd.update()
 
     -- Move June
     local direction = math.random(4)
-    if direction == 1 then JuneSprite:moveBy(0,-4) end
-    if direction == 2 then JuneSprite:moveBy(4,0) end
-    if direction == 3 then JuneSprite:moveBy(0,4) end
-    if direction == 4 then JuneSprite:moveBy(-4,0) end
+    if direction == 1 then juneSprite:moveBy(0,-4) end
+    if direction == 2 then juneSprite:moveBy(4,0) end
+    if direction == 3 then juneSprite:moveBy(0,4) end
+    if direction == 4 then juneSprite:moveBy(-4,0) end
 
     -- Call the functions below in playdate.update() to draw sprites and keep
     -- timers updated. (We aren't using timers in this example, but in most

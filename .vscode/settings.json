@@ -17,7 +17,8 @@
     "lowercase-global",
     "undefined-global",
     "undefined-field",
-    "unknown-symbol"
+    "unknown-symbol",
+    "need-check-nil"
   ],
   // Prevent the language server from linting the PlaydateSDK files
   "Lua.diagnostics.libraryFiles": "Disable"
