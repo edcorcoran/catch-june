@@ -94,34 +94,40 @@ function gameWon()
 end
 
 function moveJune()
+    math.randomseed(playdate.getSecondsSinceEpoch())
     -- Markov chain movement.
-    -- 50% chance you stay in the same direction 
-    -- 16.66% chance (50/3) you move one of the other directions. 
-
+    -- 12 options; 3/12 = 1/4 = 25% chance of changing 
     local statetab = {
-        up = {'down', 'left', 'right', 'up', 'up', 'up'}
-        , down = {'left', 'right', 'up', 'down', 'down', 'down'}
-        , left = {'right', 'up', 'down', 'left', 'left', 'left'}
-        , right = {'left', 'up', 'down', 'right', 'right', 'right'}
+        up = {'down', 'left', 'right', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up', 'up'}
+        , down = {'left', 'right', 'up', 'down', 'down', 'down', 'down', 'down', 'down', 'down', 'down', 'down'}
+        , left = {'right', 'up', 'down', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'}
+        , right = {'left', 'up', 'down', 'right', 'right', 'right', 'right', 'right', 'right', 'right', 'right', 'right'}
     }
 
+    -- choose a random item from list
     local list = statetab[lastJuneMovement]
-      -- choose a random item from list
-    local nextmove = list[math.random(6)]
+    local nextmove = list[math.random(#list)]
+
+    -- if June hits the boundaries of the screen, switch direction
+    if juneSprite.x < 0 then nextmove = 'right' end -- too far left
+    if juneSprite.y < 0 then nextmove = 'down' end -- too far up 
+    if juneSprite.x > 400 then nextmove = 'left' end -- too far right
+    if juneSprite.y > 240 then nextmove = 'up' end -- too far down 
 
     if nextmove == 'up' then 
-        if juneSprite.y > 0 then juneSprite:moveBy(0,-4) end
+        juneSprite:moveBy(0,-4)
     end
     if nextmove == 'right' then 
-        if juneSprite.y < 400 then juneSprite:moveBy(4,0) end
+        juneSprite:moveBy(4,0)
     end
     if nextmove == 'down' then 
-        if juneSprite.y < 240 then juneSprite:moveBy(0,4) end
+        juneSprite:moveBy(0,4)
     end
-    if nextmove == 'left' then juneSprite:moveBy(-4,0)
-        if juneSprite.x > 0 then juneSprite:moveBy( -4, 0 ) end
+    if nextmove == 'left' then 
+        juneSprite:moveBy(-4,0)
     end
 
+    lastJuneMovement = nextmove
 
 end
 
@@ -154,20 +160,6 @@ function pd.update()
 
     -- Move June
     moveJune()
-
-    -- local direction = math.random(4)
-    -- if direction == 1 then 
-    --     if juneSprite.y > 0 then juneSprite:moveBy(0,-4) end
-    -- end
-    -- if direction == 2 then 
-    --     if juneSprite.y < 400 then juneSprite:moveBy(4,0) end
-    -- end
-    -- if direction == 3 then 
-    --     if juneSprite.y < 240 then juneSprite:moveBy(0,4) end
-    -- end
-    -- if direction == 4 then juneSprite:moveBy(-4,0)
-    --     if juneSprite.x > 0 then juneSprite:moveBy( -4, 0 ) end
-    -- end
 
     gfx.sprite.update()
     pd.timer.updateTimers()
