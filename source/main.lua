@@ -9,6 +9,18 @@ local gfx<const> = pd.graphics
 introFlag = 1
 math.randomseed(playdate.getSecondsSinceEpoch())
 
+local playerImageWalkingUp = gfx.image.new("images/GuyBodyL2")
+local playerImageWalkingDown = gfx.image.new("images/GuyBodyR2")
+local playerImageWalkingRight = gfx.image.new("images/GuyBodyL1")
+local playerImageWalkingLeft = gfx.image.new("images/GuyBodyR1")
+assert( playerImageWalkingUp )
+assert( playerImageWalkingDown )
+assert( playerImageWalkingRight )
+assert( playerImageWalkingLeft )
+
+local JuneImage = gfx.image.new("images/dog")
+assert( JuneImage )
+
 local playerSprite = nil
 local juneSprite = nil
 
@@ -49,16 +61,11 @@ function gameIntro()
 end
 
 function setupGame()
-    local playerImage = gfx.image.new("images/GuyBodyL2")
-    assert( playerImage )
-
-    playerSprite = gfx.sprite.new( playerImage )
+    
+    playerSprite = gfx.sprite.new( playerImageWalkingUp )
     playerSprite:moveTo( 200, 120 )
     playerSprite:add()
     playerSprite:setCollideRect( 0, 0, playerSprite:getSize() )
-
-    local JuneImage = gfx.image.new("images/dog")
-    assert( JuneImage )
 
     juneSprite = gfx.sprite.new( JuneImage )
     local randx = math.random(0,400)
@@ -67,7 +74,7 @@ function setupGame()
     juneSprite:add()
     juneSprite:setCollideRect( 0, 0, juneSprite:getSize() )
 
-      local backgroundImage = gfx.image.new( "images/background" )
+    local backgroundImage = gfx.image.new( "images/background" )
     assert( backgroundImage )
 
     gfx.sprite.setBackgroundDrawingCallback(
@@ -75,7 +82,6 @@ function setupGame()
             backgroundImage:draw( 0, 0 )
         end
     )
-
 end
 
 function gameWon()
@@ -145,17 +151,27 @@ function pd.update()
         setupGame()
     end
     -- Player movement
+    local scaling_factor<const> = 1.5
+
     if pd.buttonIsPressed( pd.kButtonUp ) then
         if playerSprite.y > 0 then playerSprite:moveBy( 0, -2 ) end
+        playerSprite:setImage(playerImageWalkingUp, 0, 1)
+        playerSprite:setCollideRect( 0, 0, playerSprite:getSize() )
     end
     if pd.buttonIsPressed( pd.kButtonRight ) then
         if playerSprite.x < 400 then playerSprite:moveBy( 2, 0 ) end
+        playerSprite:setImage(playerImageWalkingRight, 0 , scaling_factor)
+        playerSprite:setCollideRect( 0, 0, playerSprite:getSize() )
     end
     if pd.buttonIsPressed( pd.kButtonDown ) then
         if playerSprite.y < 240 then playerSprite:moveBy( 0, 2 ) end
+        playerSprite:setImage(playerImageWalkingDown, 0, 1)
+        playerSprite:setCollideRect( 0, 0, playerSprite:getSize() )
     end
     if pd.buttonIsPressed( pd.kButtonLeft ) then
         if playerSprite.x > 0 then playerSprite:moveBy( -2, 0 ) end
+        playerSprite:setImage(playerImageWalkingLeft, 0 , scaling_factor)
+        playerSprite:setCollideRect( 0, 0, playerSprite:getSize() )
     end
 
     -- Move June
