@@ -57,7 +57,7 @@ function setupGame()
     playerSprite:add()
     playerSprite:setCollideRect( 0, 0, playerSprite:getSize() )
 
-    local JuneImage = gfx.image.new("images/Monster")
+    local JuneImage = gfx.image.new("images/dog")
     assert( JuneImage )
 
     juneSprite = gfx.sprite.new( JuneImage )
