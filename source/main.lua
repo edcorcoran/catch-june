@@ -41,7 +41,7 @@ assert (dogbark)
 
 function gameIntro()
     -- start music
-    -- backgroundMusic:play(0)
+    backgroundMusic:play(0)
     
     local font<const> = gfx.getFont()
     
