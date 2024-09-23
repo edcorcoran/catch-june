@@ -5,10 +5,21 @@ import "CoreLibs/timer"
 
 local pd<const> = playdate
 local gfx<const> = pd.graphics
+local snd<const> = pd.sound
+local wait_length<const> = 500
 
 introFlag = 1
 math.randomseed(playdate.getSecondsSinceEpoch())
 
+local playerSprite = nil
+local juneSprite = nil
+
+local moveOptions = {'up','down', 'left', 'right'}
+local lastJuneMovement = moveOptions[math.random(4)]
+local barkCounter = 0
+
+
+-- sprite images
 local playerImageWalkingUp = gfx.image.new("images/GuyBodyL2")
 local playerImageWalkingDown = gfx.image.new("images/GuyBodyR2")
 local playerImageWalkingRight = gfx.image.new("images/GuyBodyL1")
@@ -21,15 +32,17 @@ assert( playerImageWalkingLeft )
 local JuneImage = gfx.image.new("images/dog")
 assert( JuneImage )
 
-local playerSprite = nil
-local juneSprite = nil
+-- sound & music sources 
+local backgroundMusic = snd.fileplayer.new("sounds/music")
+assert ( backgroundMusic )
 
-local wait_length<const> = 500
-
-local moveOptions = {'up','down', 'left', 'right'}
-local lastJuneMovement = moveOptions[math.random(4)]
+local dogbark = snd.sampleplayer.new("sounds/bark")
+assert (dogbark)
 
 function gameIntro()
+    -- start music
+    -- backgroundMusic:play(0)
+    
     local font<const> = gfx.getFont()
     
     local phrase_1<const> = "June escaped!"
@@ -119,6 +132,13 @@ function moveJune()
     if juneSprite.y < 0 then nextmove = 'down' end -- too far up 
     if juneSprite.x > 400 then nextmove = 'left' end -- too far right
     if juneSprite.y > 240 then nextmove = 'up' end -- too far down 
+
+    -- bark every 10 times June changes direction 
+    -- print(barkCounter)
+    if nextmove ~= lastJuneMovement then
+        barkCounter = barkCounter + 1
+        if math.fmod(barkCounter,10) == 0 then dogbark:play() end
+    end
 
     if nextmove == 'up' then 
         juneSprite:moveBy(0,-4)
